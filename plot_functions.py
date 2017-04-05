@@ -3,21 +3,123 @@ import ROOT as ROOT
 import CMS_lumi, tdrstyle
 import argparse
 
+def CompHistFromTwoBranchSameFile (plot_info):
+    c1 = ROOT.TCanvas()
+    legend = ROOT.TLegend(.6 ,.70 ,.885 ,.875)
+    legend.SetFillColor(ROOT.kWhite)
+    file1 = ROOT.TFile(plot_info["file_name"][0])
+    if not file1:
+        print 'Failed to open %s' % plot_info["file_name"][0]
+        exit(0)
+    tree1 = file1.Get(plot_info["tree_folder"] + plot_info["tree_name"])
+    tree1 = file2.Get(plot_info["tree_folder"] + plot_info["tree_name"])
+    hist1 = ROOT.TH1F("hist1", "Test", plot_info["nbin"], plot_info["xmin"], plot_info["xmax"])    
+    hist2 = ROOT.TH1F("hist2", "Test", plot_info["nbin"], plot_info["xmin"], plot_info["xmax"])    
+    tree1.Draw(plot_info["tree_var"][0] + ">>hist1",plot_info["weight2"])
+    #tree1.Draw(plot_info["tree_var"][0] + ">>hist1","")
+    legend.AddEntry(hist1, plot_info["leg1"])
+
+    tree2.Draw(plot_info["tree_var"][1] + ">>hist2",plot_info["weight2"])
+    legend.AddEntry(hist2, plot_info["leg2"])
+
+    hist1.Sumw2()
+    hist2.Sumw2()
+    hist1.Scale(1/hist1.Integral())
+    hist2.Scale(1/hist2.Integral())
+    setHistAttributes(hist1, plot_info, ROOT.kBlack,0)
+    setHistAttributes(hist2, plot_info, ROOT.kRed,0)
+    hist1.Draw()
+    hist2.Draw("sames")
+    legend.Draw("same")
+    if plot_info["logy"]:
+        c1.SetLogy()
+    if plot_info["logx"]:
+        c1.SetLogx()
+    if plot_info["grid"]:
+    	c1.SetGrid()
+    #setTDRStyle(c1, 1, 13, plot_info["printCMS"]) 
+    setTDRStyle(c1, 1, 13, "No") 
+    hist1.GetXaxis().SetTitle(plot_info["xlabel"])
+    if plot_info["ylabel"] == "":
+        plot_info["ylabel"] = "Events / %s GeV" % int(hist1.GetBinWidth(1))
+    hist1.GetYaxis().SetTitle(plot_info["ylabel"])
+    c1.SaveAs(plot_info["output_file"])
+    #if not hist1:
+    #    print 'Failed to get hist from file'
+    #    exit(0)
+    #hist1.SetDirectory(ROOT.gROOT) # detach "hist" from the file
+    #return hist1
+def CompHistFromTwoFile (plot_info):
+    c1 = ROOT.TCanvas()
+    legend = ROOT.TLegend(.6 ,.70 ,.885 ,.875)
+    legend.SetFillColor(ROOT.kWhite)
+    file1 = ROOT.TFile(plot_info["file_name"][0])
+    file2 = ROOT.TFile(plot_info["file_name"][1])
+    #print "=======================\n\n"
+    #print plot_info["file_name"][0],"\t",plot_info["leg1"]
+    #print plot_info["file_name"][1],"\t",plot_info["leg2"]
+    #print "\n\n======================="
+    if not file1:
+        print 'Failed to open %s' % plot_info["file_name"][0]
+        exit(0)
+    if not file2:
+        print 'Failed to open %s' % plot_info["file_name"][1]
+        exit(0)
+    tree1 = file1.Get(plot_info["tree_folder"] + plot_info["tree_name"])
+    tree2 = file2.Get(plot_info["tree_folder"] + plot_info["tree_name"])
+    hist1 = ROOT.TH1F("hist1", "Test", plot_info["nbin"], plot_info["xmin"], plot_info["xmax"])    
+    hist2 = ROOT.TH1F("hist2", "Test", plot_info["nbin"], plot_info["xmin"], plot_info["xmax"])    
+    tree1.Draw(plot_info["tree_var"][0] + ">>hist1",plot_info["weight1"])
+    #tree1.Draw(plot_info["tree_var"][0] + ">>hist1","")
+    legend.AddEntry(hist1, plot_info["leg1"])
+
+    tree2.Draw(plot_info["tree_var"][0] + ">>hist2",plot_info["weight2"])
+    legend.AddEntry(hist2, plot_info["leg2"])
+
+    hist1.Sumw2()
+    hist2.Sumw2()
+    hist1.Scale(1/hist1.Integral())
+    hist2.Scale(1/hist2.Integral())
+    setHistAttributes(hist1, plot_info, ROOT.kBlack,0)
+    setHistAttributes(hist2, plot_info, ROOT.kRed,0)
+    hist1.Draw()
+    hist2.Draw("sames")
+    legend.Draw("same")
+    if plot_info["logy"]:
+        c1.SetLogy()
+    if plot_info["logx"]:
+        c1.SetLogx()
+    if plot_info["grid"]:
+    	c1.SetGrid()
+    #setTDRStyle(c1, 1, 13, plot_info["printCMS"]) 
+    setTDRStyle(c1, 1, 13, "No") 
+    hist1.GetXaxis().SetTitle(plot_info["xlabel"])
+    if plot_info["ylabel"] == "":
+        plot_info["ylabel"] = "Events / %s GeV" % int(hist1.GetBinWidth(1))
+    hist1.GetYaxis().SetTitle(plot_info["ylabel"])
+    c1.SaveAs(plot_info["output_file"])
+    #if not hist1:
+    #    print 'Failed to get hist from file'
+    #    exit(0)
+    #hist1.SetDirectory(ROOT.gROOT) # detach "hist" from the file
+    #return hist1
 def getHistFromFile (plot_info):
-    file = ROOT.TFile(plot_info["file_name"])
+    file = ROOT.TFile(plot_info["file_name"][0])
+    print "File Name: ",plot_info["file_name"][0]
+    print "Tree Folder: ",plot_info["tree_folder"]
     if not file:
-        print 'Failed to open %s' % plot_info["file_name"]
+        print 'Failed to open %s' % plot_info["file_name"][0]
         exit(0)
     tree = file.Get(plot_info["tree_folder"] + plot_info["tree_name"])
-    hist = ROOT.TH1F("hist", "Test", 1000, 0, 1500)    
-    tree.Draw(plot_info["tree_var"] + ">>hist")
+    hist = ROOT.TH1F("hist", "Test", plot_info["nbin"], plot_info["xmin"], plot_info["xmax"])    
+    tree.Draw(plot_info["tree_var"][0] + ">>hist")
     if not hist:
         print 'Failed to get hist from file'
         exit(0)
     hist.SetDirectory(ROOT.gROOT) # detach "hist" from the file
     return hist
 def setHistAttributes (hist, plot_info, line_color, fill_color):
-    hist.SetFillColor(fill_color)
+    #hist.SetFillColor(fill_color)
     hist.SetLineColor(line_color)
     hist.SetLineWidth(2)
     if plot_info["rebin"] != 0:
@@ -25,7 +127,7 @@ def setHistAttributes (hist, plot_info, line_color, fill_color):
             hist.Rebin(plot_info["rebin"])
         else:
             print 'Rebin only defined for 1D hist. Use --rebin2D instead.'
-    hist.Draw()
+    #hist.Draw()
     if plot_info["xmin"] < plot_info["xmax"]:
         hist.GetXaxis().SetRangeUser(plot_info["xmin"], plot_info["xmax"])
     if plot_info["ymin"] < plot_info["ymax"]:
@@ -134,12 +236,20 @@ def getBasicParser():
                         help="Name of root tree")  
     parser.add_argument('-f', '--tree_folder', type=str, required=False, default="",
                         help="Folder where tree is stored")  
-    parser.add_argument('-v', '--tree_var', type=str, required=False,
+    parser.add_argument('-v', '--tree_var', nargs='+', type=str, required=False,
                         help="Variable name in root tree")  
     parser.add_argument('--xlabel', type=str, required=False, default="", 
                         help="x axis label")
     parser.add_argument('--ylabel', type=str, required=False, default="", 
                         help="y axis label")
+    parser.add_argument('--leg1', type=str, required=False, default="Legend 1", 
+                        help="First Histo/Rootfile legend")
+    parser.add_argument('--leg2', type=str, required=False, default="Legend 2", 
+                        help="Second Histo/Rootfile legend")
+    parser.add_argument('--weight1', type=str, required=False, default="", 
+                        help="Weight corresponding to variable")
+    parser.add_argument('--weight2', type=str, required=False, default="", 
+                        help="Weight corresponding to variable")
     parser.add_argument('--xmin', type=float, required=False, default=0, 
                         help="minimum x value")
     parser.add_argument('--xmax', type=float, required=False, default=0, 
@@ -148,12 +258,16 @@ def getBasicParser():
                         help="minimum y value")
     parser.add_argument('--ymax', type=float, required=False, default=0, 
                         help="maximum y value")
+    parser.add_argument('--nbin', type=int, required=False, default=30, 
+                        help="Number of bins to group together (1D only)")
     parser.add_argument('--rebin', type=int, required=False, default=0, 
                         help="Number of bins to group together (1D only)")
     parser.add_argument('--logy', action='store_true',
                         help="Set y axis to logarithmic scale")
     parser.add_argument('--logx', action='store_true', 
                         help="Set x axis to logarithmic scale")
+    parser.add_argument('--grid', action='store_true', 
+                        help="Set grid for x-y axis")
     parser.add_argument('--printCMS', type=str, default="left",required=False,
                         choices=["left","right"], help="""print 'CMS preliminary' 
                         in left (or right) upper corner""")

@@ -23,115 +23,62 @@ def getaQGC_parameters(plot_info, aQGC_par):
 		indices1s = [i for i, s in enumerate(event.LHEWeightIDs) if aQGC_par.replace("_m","_0p0") in s]
 		FT0_key.append(indices1s[0])
 		FT0_val.append(event.LHEWeightIDs[indices1s[0]]+" (SM)")
-		#print FT0_key
-		#print FT0_val
-		#print "###########################################"
 	return FT0_key,FT0_val
 
-def aQGC_plotting (plot_info, aQGC_key, aQGC_val, outputNameString):
-    #c1 = ROOT.TCanvas()
-    print "size of aQGC parameter: ",len(aQGC_key)
-    if len(aQGC_key) == 0:
-        print 'Error: No aQGC parameter for this input root file'
-        exit(0)
-    	
-    c1 = getCanvas()
-    legend = ROOT.TLegend(.8 ,.50 ,1.0 ,.950)
-    legend.SetFillColor(ROOT.kWhite)
-    legend.SetTextSize(0.04);
+	
+def aQGC_GetHisto(plot_info, key1, ColNum):
     file1 = ROOT.TFile(plot_info["file_name"][0])
     if not file1:
         print 'Failed to open %s' % plot_info["file_name"][0]
         exit(0)
     tree1 = file1.Get(plot_info["tree_folder"] + plot_info["tree_name"])
-
     hist1 = ROOT.TH1F("hist1", "Test", plot_info["nbin"], plot_info["xmin"], plot_info["xmax"])    
-    hist2 = ROOT.TH1F("hist2", "Test", plot_info["nbin"], plot_info["xmin"], plot_info["xmax"])    
-    hist3 = ROOT.TH1F("hist3", "Test", plot_info["nbin"], plot_info["xmin"], plot_info["xmax"])    
-    hist4 = ROOT.TH1F("hist4", "Test", plot_info["nbin"], plot_info["xmin"], plot_info["xmax"])    
-    hist5 = ROOT.TH1F("hist5", "Test", plot_info["nbin"], plot_info["xmin"], plot_info["xmax"])    
-    hist6 = ROOT.TH1F("hist6", "Test", plot_info["nbin"], plot_info["xmin"], plot_info["xmax"])    
-    hist7 = ROOT.TH1F("hist7", "Test", plot_info["nbin"], plot_info["xmin"], plot_info["xmax"])    
-    hist8 = ROOT.TH1F("hist8", "Test", plot_info["nbin"], plot_info["xmin"], plot_info["xmax"])    
+    tree1.Draw(plot_info["tree_var"][0] + ">>hist1","LHEWeights["+str(key1)+"]","",1000)
+    hist1.SetDirectory(0)
+    hist1.Scale(1/hist1.Integral())
+    #colorArray = ["ROOT.kBlack", "ROOT.kGray", "ROOT.KRed", "ROOT.kGreen", "ROOT.kBlue", "ROOT.kYellow", "ROOT.kMagenta", "ROOT.kCyan", "ROOT.Orange", "ROOT.kViolet", "ROOT.kSpring", "ROOT.kTeal", "ROOT.kAzure", "ROOT.kPink"]
+    #colorArray = [ROOT.kBlack, ROOT.kGray, ROOT.KRed, ROOT.kGreen, ROOT.kBlue, ROOT.kYellow, ROOT.kMagenta, ROOT.kCyan, ROOT.Orange, ROOT.kViolet, ROOT.kSpring, ROOT.kTeal, ROOT.kAzure, ROOT.kPink]
+    colorArray = [1, 920, 632, 416, 600, 400, 616, 432, 800, 880, 820, 840, 860, 900, 940, 960]
+    setHistAttributes(hist1, plot_info, colorArray[ColNum],0)
+    return hist1;
+	
+def aQGC_plotting (plot_info, aQGC_key, aQGC_val, outputNameString):
+    print "size of aQGC parameter: ",len(aQGC_key)
+    if len(aQGC_key) == 0:
+        print 'Error: No aQGC parameter for this input root file'
+        exit(0)
+    	
+    c2 = getCanvas()
+    legend = ROOT.TLegend(.8 ,.60 ,1.0 ,.900)
+    legend.SetFillColor(ROOT.kWhite)
 
-    if len(aQGC_key) > 0:
-    	tree1.Draw(plot_info["tree_var"][0] + ">>hist1","LHEWeights["+str(aQGC_key[0])+"]")
-    	legend.AddEntry(hist1, aQGC_val[0].replace("_m"," = ").replace("p",".").replace("_0"," = 0"))
-    	hist1.Scale(1/hist1.Integral())
-    	setHistAttributes(hist1, plot_info, ROOT.kBlack,0)
-    if len(aQGC_key) >= 2:
-    	tree1.Draw(plot_info["tree_var"][0] + ">>hist2","LHEWeights["+str(aQGC_key[1])+"]")
-    	legend.AddEntry(hist2, aQGC_val[1].replace("_m"," = ").replace("p",".").replace("_0"," = 0"))
-    	hist2.Scale(1/hist2.Integral())
-    	setHistAttributes(hist2, plot_info, ROOT.kRed,0)
-    if len(aQGC_key) >= 3:
-    	tree1.Draw(plot_info["tree_var"][0] + ">>hist3","LHEWeights["+str(aQGC_key[2])+"]")
-    	legend.AddEntry(hist3, aQGC_val[2].replace("_m"," = ").replace("p",".").replace("_0"," = 0"))
-    	hist3.Scale(1/hist3.Integral())
-    	setHistAttributes(hist3, plot_info, ROOT.kGreen,0)
-    if len(aQGC_key) >= 4:
-    	tree1.Draw(plot_info["tree_var"][0] + ">>hist4","LHEWeights["+str(aQGC_key[3])+"]")
-    	legend.AddEntry(hist4, aQGC_val[3].replace("_m"," = ").replace("p",".").replace("_0"," = 0"))
-    	hist4.Scale(1/hist4.Integral())
-    	setHistAttributes(hist4, plot_info, ROOT.kYellow,0)
-    if len(aQGC_key) >= 5:
-    	tree1.Draw(plot_info["tree_var"][0] + ">>hist5","LHEWeights["+str(aQGC_key[4])+"]")
-    	legend.AddEntry(hist5, aQGC_val[4].replace("_m"," = ").replace("p",".").replace("_0"," = 0"))
-    	hist5.Scale(1/hist5.Integral())
-    	setHistAttributes(hist5, plot_info, ROOT.kViolet,0)
-    if len(aQGC_key) >= 6:
-    	tree1.Draw(plot_info["tree_var"][0] + ">>hist6","LHEWeights["+str(aQGC_key[5])+"]")
-    	legend.AddEntry(hist6, aQGC_val[5].replace("_m"," = ").replace("p",".").replace("_0"," = 0"))
-    	hist6.Scale(1/hist6.Integral())
-    	setHistAttributes(hist6, plot_info, ROOT.kBlue,0)
-    if len(aQGC_key) >= 7:
-    	tree1.Draw(plot_info["tree_var"][0] + ">>hist7","LHEWeights["+str(aQGC_key[6])+"]")
-    	legend.AddEntry(hist7, aQGC_val[6].replace("_m"," = ").replace("p",".").replace("_0"," = 0"))
-    	hist7.Scale(1/hist7.Integral())
-    	setHistAttributes(hist7, plot_info, ROOT.kMagenta,0)
-    if len(aQGC_key) >= 8:
-    	tree1.Draw(plot_info["tree_var"][0] + ">>hist8","LHEWeights["+str(aQGC_key[7])+"]")
-    	legend.AddEntry(hist8, aQGC_val[7].replace("_m"," = ").replace("p",".").replace("_0"," = 0"))
-    	hist8.Scale(1/hist8.Integral())
-    	setHistAttributes(hist8, plot_info, ROOT.kOrange,0)
-
-    hist1.Draw()
-    if len(aQGC_key) >= 2:
-    	hist2.Draw("sames")
-    if len(aQGC_key) >= 3:
-    	hist3.Draw("sames")
-    if len(aQGC_key) >= 4:
-    	hist4.Draw("sames")
-    if len(aQGC_key) >= 5:
-    	hist5.Draw("sames")
-    if len(aQGC_key) >= 6:
-    	hist6.Draw("sames")
-    if len(aQGC_key) >= 7:
-    	hist7.Draw("sames")
-    if len(aQGC_key) >= 8:
-    	hist8.Draw("sames")
+    hist1 = []
+    for i in range(0,len(aQGC_key)):
+	print "Working on hist number : ",i
+    	hist1.append(aQGC_GetHisto(plot_info,aQGC_key[i],i))
+    for a,list1 in enumerate(hist1):
+    	#print a,list1
+    	legend.AddEntry(list1, aQGC_val[a].replace("_m"," = ").replace("p",".").replace("_0"," = 0"))
+	if i==0:
+		list1.Draw()
+	else:
+		list1.Draw("sames")
 
     legend.Draw("same")
     if plot_info["logy"]:
-        c1.SetLogy()
+        c2.SetLogy()
     if plot_info["logx"]:
-        c1.SetLogx()
+        c2.SetLogx()
     if plot_info["grid"]:
-    	c1.SetGrid()
-    #setTDRStyle(c1, 1, 13, plot_info["printCMS"]) 
-    setTDRStyle(c1, 1, 13, "No") 
-    hist1.GetXaxis().SetTitle(plot_info["xlabel"])
+    	c2.SetGrid()
+    #setTDRStyle(c2, 1, 13, plot_info["printCMS"]) 
+    setTDRStyle(c2, 1, 13, "No") 
+    hist1[0].GetXaxis().SetTitle(plot_info["xlabel"])
     if plot_info["ylabel"] == "":
-        plot_info["ylabel"] = "Events / %s GeV" % int(hist1.GetBinWidth(1))
-    hist1.GetYaxis().SetTitle(plot_info["ylabel"])
-    c1.SaveAs(str(outputNameString)+plot_info["output_file"])
-    #if not hist1:
-    #    print 'Failed to get hist from file'
-    #    exit(0)
-    #hist1.SetDirectory(ROOT.gROOT) # detach "hist" from the file
-    #return hist1
-
-
+        plot_info["ylabel"] = "Events / %s GeV" % int(hist1[0].GetBinWidth(1))
+    hist1[0].GetYaxis().SetTitle(plot_info["ylabel"])
+    c2.SaveAs(str(outputNameString)+plot_info["output_file"])
+    #c2.SaveAs("test.pdf");
 
 def CompHistFromTwoBranchSameFile (plot_info):
     c1 = ROOT.TCanvas()

@@ -33,32 +33,40 @@ def aQGC_GetHisto(plot_info, key1, ColNum):
         exit(0)
     tree1 = file1.Get(plot_info["tree_folder"] + plot_info["tree_name"])
     hist1 = ROOT.TH1F("hist1", "Test", plot_info["nbin"], plot_info["xmin"], plot_info["xmax"])    
-    tree1.Draw(plot_info["tree_var"][0] + ">>hist1","LHEWeights["+str(key1)+"]","",1000)
+    tree1.Draw(plot_info["tree_var"][0] + ">>hist1","LHEWeights["+str(key1)+"]","")
     hist1.SetDirectory(0)
     hist1.Scale(1/hist1.Integral())
     #colorArray = ["ROOT.kBlack", "ROOT.kGray", "ROOT.KRed", "ROOT.kGreen", "ROOT.kBlue", "ROOT.kYellow", "ROOT.kMagenta", "ROOT.kCyan", "ROOT.Orange", "ROOT.kViolet", "ROOT.kSpring", "ROOT.kTeal", "ROOT.kAzure", "ROOT.kPink"]
     #colorArray = [ROOT.kBlack, ROOT.kGray, ROOT.KRed, ROOT.kGreen, ROOT.kBlue, ROOT.kYellow, ROOT.kMagenta, ROOT.kCyan, ROOT.Orange, ROOT.kViolet, ROOT.kSpring, ROOT.kTeal, ROOT.kAzure, ROOT.kPink]
-    colorArray = [1, 920, 632, 416, 600, 400, 616, 432, 800, 880, 820, 840, 860, 900, 940, 960]
+    colorArray = [1, 920, 632, 416, 600, 400, 616, 432, 800, 880, 820, 840, 860, 900, 940, 960, 980, 640, 660, 680, 700, 720, 740, 760]
     setHistAttributes(hist1, plot_info, colorArray[ColNum],0)
     return hist1;
 	
-def aQGC_plotting (plot_info, aQGC_key, aQGC_val, outputNameString):
+def aQGC_plotting (plot_info, aQGC_key, aQGC_val, outputNameString, skip):
     print "size of aQGC parameter: ",len(aQGC_key)
+    print "==> Key: ",aQGC_key
+    print "==> Val: ",aQGC_val
     if len(aQGC_key) == 0:
         print 'Error: No aQGC parameter for this input root file'
         exit(0)
     	
     c2 = getCanvas()
-    legend = ROOT.TLegend(.8 ,.60 ,1.0 ,.900)
+    legend = ROOT.TLegend(.83 ,.20 ,1.0 ,.930)
     legend.SetFillColor(ROOT.kWhite)
+    legend.SetTextSize(0.04)
 
     hist1 = []
-    for i in range(0,len(aQGC_key)):
+    new_aQGC_val = []
+    for i in range(0,len(aQGC_key),skip):
 	print "Working on hist number : ",i
-    	hist1.append(aQGC_GetHisto(plot_info,aQGC_key[i],i))
+    	hist1.append(aQGC_GetHisto(plot_info,aQGC_key[i],i/skip))
+	new_aQGC_val.append(aQGC_val[i])
     for a,list1 in enumerate(hist1):
     	#print a,list1
-    	legend.AddEntry(list1, aQGC_val[a].replace("_m"," = ").replace("p",".").replace("_0"," = 0"))
+	if new_aQGC_val[a].find("SM") == -1:
+    		legend.AddEntry(list1, new_aQGC_val[a].replace("_m"," = -").replace("p",".").replace("_0"," = 0"),"lpe")
+	else:
+    		legend.AddEntry(list1, "SM", "lpe")
 	if i==0:
 		list1.Draw()
 	else:
@@ -82,7 +90,7 @@ def aQGC_plotting (plot_info, aQGC_key, aQGC_val, outputNameString):
 
 def CompHistFromTwoBranchSameFile (plot_info):
     c1 = ROOT.TCanvas()
-    legend = ROOT.TLegend(.6 ,.70 ,.885 ,.875)
+    legend = ROOT.TLegend(.6 ,.60 ,.885 ,.950)
     legend.SetFillColor(ROOT.kWhite)
     file1 = ROOT.TFile(plot_info["file_name"][0])
     if not file1:
@@ -283,7 +291,7 @@ def setTDRStyle(canvas, luminosity, energy, printCMS):
             CMS_lumi.CMS_lumi(canvas, 4, iPos)
 def getCanvas():
     H_ref = 600; 
-    W_ref = 800; 
+    W_ref = 900; 
     W = W_ref
     H  = H_ref
 
@@ -297,8 +305,8 @@ def getCanvas():
     canvas.SetBorderMode(0)
     canvas.SetFrameFillStyle(0)
     canvas.SetFrameBorderMode(0)
-    canvas.SetLeftMargin( L/W )
-    canvas.SetRightMargin( R/W )
+    canvas.SetLeftMargin( L/W *0.6 )
+    canvas.SetRightMargin( R/W*5 )
     canvas.SetTopMargin( T/H )
     canvas.SetBottomMargin( B/H )
     canvas.SetTickx(0)

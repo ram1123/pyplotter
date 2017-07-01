@@ -82,8 +82,8 @@ def setTDRStyle():
 # Margins:
   tdrStyle.SetPadTopMargin(0.05)
   tdrStyle.SetPadBottomMargin(0.13)
-  tdrStyle.SetPadLeftMargin(0.16)
-  tdrStyle.SetPadRightMargin(0.02)
+  tdrStyle.SetPadLeftMargin(0.22)
+  tdrStyle.SetPadRightMargin(0.12)
 
 # For the Global title:
 
@@ -108,7 +108,7 @@ def setTDRStyle():
   # tdrStyle.SetTitleXSize(Float_t size = 0.02) # Another way to set the size?
   # tdrStyle.SetTitleYSize(Float_t size = 0.02)
   tdrStyle.SetTitleXOffset(0.75)
-  tdrStyle.SetTitleYOffset(1.20)
+  tdrStyle.SetTitleYOffset(1.10)
   # tdrStyle.SetTitleOffset(1.1, "Y") # Another way to set the Offset
 
 # For the axis labels:

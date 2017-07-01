@@ -15,53 +15,74 @@ def main():
     
     print "\n========= plot FT0  ===========\n"
     key,val = plotter.getaQGC_parameters(plot_info, "ft0_m")
-    plotter.aQGC_plotting (plot_info, key, val,"FT0_")
+    print key
+    print val
+    print val[-14:]
+    plotter.aQGC_plotting (plot_info, key[-1:], val[-1:],"FT0_",1)
+
     """
+    key,val = plotter.getaQGC_parameters(plot_info, "ft0_m")
+    print key
+    print val
+    print val[-14:]
+    plotter.aQGC_plotting (plot_info, key[-14:], val[-14:],"FT0_")
+
     print "\n========= plot FT1  ===========\n"
     key,val = plotter.getaQGC_parameters(plot_info, "ft1_m")
-    plotter.aQGC_plotting (plot_info, key, val,"FT1_")
+    print key
+    print val
+    print val[-6:]
+    plotter.aQGC_plotting (plot_info, key[-6:], val[-6:],"FT1_")
     # plot FT2
+    print "\n========= plot FT2  ===========\n"
     key,val = plotter.getaQGC_parameters(plot_info, "ft2_m")
-    plotter.aQGC_plotting (plot_info, key, val,"FT2_")
+    print key
+    print val
+    print val[-11:]
+    plotter.aQGC_plotting (plot_info, key[-11:], val[-11:],"FT2_")
     # plot FS0
+    print "\n========= plot FS0  ===========\n"
     key,val = plotter.getaQGC_parameters(plot_info, "fs0_m")
-    plotter.aQGC_plotting (plot_info, key, val,"FS0_")
+    print key
+    print val
+    print val[-5:]
+    plotter.aQGC_plotting (plot_info, key[-5:], val[-5:],"FS0_")
     # plot FS1
+    print "\n========= plot FS1  ===========\n"
     key,val = plotter.getaQGC_parameters(plot_info, "fs1_m")
-    plotter.aQGC_plotting (plot_info, key, val,"FS1_")
+    print key
+    print val
+    print val[-11:]
+    plotter.aQGC_plotting (plot_info, key[-11:], val[-11:],"FS1_")
     # plot FM0
+    print "\n========= plot FM0  ===========\n"
     key,val = plotter.getaQGC_parameters(plot_info, "fm0_m")
+    print key
+    print val
     plotter.aQGC_plotting (plot_info, key, val,"FM0_")
     # plot FM1
+    print "\n========= plot FM1  ===========\n"
     key,val = plotter.getaQGC_parameters(plot_info, "fm1_m")
-    plotter.aQGC_plotting (plot_info, key, val,"FM1_")
+    print key
+    print val
+    print val[-6:]
+    plotter.aQGC_plotting (plot_info, key[-6:], val[-6:],"FM1_")
     # plot FM6
+    print "\n========= plot FM6  ===========\n"
     key,val = plotter.getaQGC_parameters(plot_info, "fm6_m")
-    plotter.aQGC_plotting (plot_info, key, val,"FM6_")
+    print key
+    print val
+    print val[-14:]
+    plotter.aQGC_plotting (plot_info, key[-14:], val[-14:],"FM6_")
     # plot FM7
+    print "\n========= plot FM7  ===========\n"
     key,val = plotter.getaQGC_parameters(plot_info, "fm7_m")
-    plotter.aQGC_plotting (plot_info, key, val,"FM7_")
+    print key
+    print val
+    print val[-11:]
+    plotter.aQGC_plotting (plot_info, key[-11:], val[-11:],"FM7_")
     """
 
-    #key,val = plotter.getaQGC_parameters(plot_info, "fs0_m")
-    #print "key : ",key
-    #print "val : ",val
-    
-    #canvas = ROOT.TCanvas("canvas", "canvas", 800, 600)
-    ##hist = plotter.getHistFromFile(plot_info)
-    #hist = plotter.CompHistFromTwoFile(plot_info)
-    #if type(hist) == "<class '__main__.TH2F'>":
-    #    hist_opts = "colz"
-    #elif plot_info["is_data"]:
-    #    hist_opts = "e1"
-    #    line_color = ROOT.kBlack
-    #    fill_color = ROOT.kBlack
-    #else:
-    #    hist_opts = "hist"
-    #    line_color = ROOT.kRed+4
-    #    fill_color = ROOT.kOrange-8
-    ##plotter.setHistAttributes(hist, plot_info, line_color, fill_color)
-    ##plotter.makePlot(hist, hist_opts, plot_info)
 def getPlotArgs():
     parser = plotter.getBasicParser()
     parser.add_argument("-n", "--file_name", nargs='+', type=str, required=False,

@@ -8,9 +8,9 @@ import argparse
 
 def getLegends(pos,ncol,nvar,fontsize):
     if pos == "tr":
-    	legend = ROOT.TLegend(.50-(0.15*(ncol-1)), 0.80-(0.02*(nvar/ncol-1)) ,.95 ,.920)
+    	legend = ROOT.TLegend(.70-(0.15*(ncol-1)), 0.80-(0.02*(nvar/ncol-1)) ,.95 ,.920)
     elif pos == "tl":
-    	legend = ROOT.TLegend(0.11, 0.80-(0.02*(nvar/ncol-1)) ,.60+(0.15*(ncol-1)) ,.920)
+    	legend = ROOT.TLegend(0.11, 0.85-(0.02*(nvar/ncol-1)) ,.80+(0.15*(ncol-1)) ,.920)
     elif pos == "tc":
     	legend = ROOT.TLegend(0.30, 0.80-(0.02*(nvar/ncol-1)) ,.80 ,.920)
     elif pos == "bl":
@@ -23,6 +23,7 @@ def getLegends(pos,ncol,nvar,fontsize):
     	print "Invalid default position: Switching to default legend position top-right"
     	legend = ROOT.TLegend(.85-(0.15*(ncol-1)), 0.88-(0.02*(nvar/ncol-1)) ,.50 ,.950)
     legend.SetFillColor(ROOT.kWhite)
+    legend.SetFillStyle(0)
     legend.SetTextSize(fontsize)
     legend.SetNColumns(ncol)
     return legend
@@ -55,6 +56,18 @@ def setHistAttributes (hist, plot_info, line_color, fill_color):
     #hist.SetFillColor(fill_color)
     hist.SetLineColor(line_color)
     hist.SetMarkerColor(line_color)
+    #colorArray = [1, 632, 416, 600, 400, 616, 432, 920, 800, 880, 820, 840, 860, 900, 940, 960, 980, 640, 660, 680, 700, 720, 740, 760]
+    #stl=1
+    #if(line_color==1):
+    #	stl=1
+    #if(line_color==632):
+    #	stl=2
+    #if(line_color==416):
+    #	stl=3
+    #if(line_color==600):
+    #	stl=4
+    #hist.SetMarkerStyle(stl)
+    #hist.SetMarkerSize(1.5)
     #hist.SetLineWidth(2)
     hist.SetTitleOffset(1.3, "x")
     hist.SetTitleOffset(1.3, "y")
@@ -66,7 +79,10 @@ def setHistAttributes (hist, plot_info, line_color, fill_color):
     if plot_info["xmin"] < plot_info["xmax"]:
         hist.GetXaxis().SetRangeUser(plot_info["xmin"], plot_info["xmax"])
     if plot_info["ymin"] < plot_info["ymax"]:
-        hist.GetYaxis().SetRangeUser(plot_info["ymin"], plot_info["ymax"])
+        #hist.GetYaxis().SetRangeUser(plot_info["ymin"], plot_info["ymax"])
+	#hist.SetMinimum(plot_info["ymin"])
+	hist.SetMaximum(plot_info["ymax"])
+
     #hist.GetYaxis().SetTitle(plot_info["ylabel"])
 
 def createRatio(h1, h2,col):	# h1/h2
@@ -145,6 +161,13 @@ def getHistFromFile (plot_info,i,j,k):
     #tree.Draw(plot_info["tree_var"][j] + ">>hist",plot_info["weight1"])
     if plot_info["weight"] == "":
     	tree.Draw(plot_info["tree_var"][j] + ">>hist",plot_info["cut"],"")
+	#if j == 0:
+	#	cut = "AK4_jj_DeltaEta_gen"
+	#	#cut = ""
+	#	tree.Draw(plot_info["tree_var"][j] + ">>hist",cut)
+	#if j == 1:
+	#	cut = "vbf_maxpt_jj_Deta<1.0"
+	#	tree.Draw(plot_info["tree_var"][j] + ">>hist",cut)
     else:
 	for n, event in enumerate(tree):
 		if n>0:
@@ -280,7 +303,7 @@ def aQGC_plotting (plot_info, aQGC_key, aQGC_val, outputNameString, skip):
 def CompHistFromTwoBranchSameFile (plot_info):
     c1 = getCanvas()
     setTDRStyle(c1, 1, 13, "No") 
-    legend = getLegends(plot_info["legPos"],1,len(plot_info["tree_var"]),plot_info["legFontSize"])
+    legend = getLegends(plot_info["legPos"],2,len(plot_info["tree_var"]),plot_info["legFontSize"])
 
     hist1 = []
     new_aQGC_val = []
@@ -289,21 +312,11 @@ def CompHistFromTwoBranchSameFile (plot_info):
     	hist1.append(getHistFromFile(plot_info,0,i,i))
 	print "=======\n"
 	# below pattern is for the legend...
-	if (plot_info["leg"][0] != ""):
+	if (plot_info["leg"][i] != ""):
 		new_aQGC_val.append(plot_info["leg"][i])
-	elif (plot_info["tree_var"][i]).find("DeltaM") != -1:
-		print "Found: DeltaM from",plot_info["tree_var"][i]
-		new_aQGC_val.append("Get W using #Delta M")
-	elif (plot_info["tree_var"][i]).find("MothInfo") != -1:
-		print "Found: MothInfo from",plot_info["tree_var"][i]
-		new_aQGC_val.append("Get W using Mother")
-	elif (plot_info["tree_var"][i]).find("gen") != -1:
-		print "Found: gen from",plot_info["tree_var"][i]
-		new_aQGC_val.append("From GenParticleColl")
-	elif (plot_info["tree_var"][i]).find("LHELep") != -1:
-		new_aQGC_val.append("From LHE")
 	else:
 		new_aQGC_val.append(plot_info["tree_var"][i])
+    maximumY = 0.0
     for a,list1 in enumerate(hist1):
     	list1.Sumw2()
     	list1.GetXaxis().SetTitle(plot_info["xlabel"])
@@ -312,6 +325,9 @@ def CompHistFromTwoBranchSameFile (plot_info):
     	list1.GetYaxis().SetTitle(plot_info["ylabel"])
     	list1.Scale(1/list1.Integral())
     	legend.AddEntry(list1, new_aQGC_val[a],"lpe")
+	if (list1.GetMaximum() > maximumY ):
+		maximumY=list1.GetMaximum()*1.5
+	list1.SetMaximum(maximumY)
 	if i==0:
 		list1.Draw()
 	else:
@@ -454,7 +470,7 @@ def getBasicParser():
                         help="y axis label")
     parser.add_argument('--leg', nargs='+', type=str, required=False, default="", 
                         help="Histo/Rootfile legend name")
-    parser.add_argument('--legPos', type=str, required=False, default="tr", 
+    parser.add_argument('--legPos', type=str, required=False, default="bc", 
                         help="Legend Position: tr, tl, tc, br, bc, bl")
     parser.add_argument('--legFontSize', type=float, required=False, default=0.04, 
                         help="Legend font size")
@@ -468,7 +484,7 @@ def getBasicParser():
                         help="minimum y value")
     parser.add_argument('--ymax', type=float, required=False, default=0, 
                         help="maximum y value")
-    parser.add_argument('--nbin', type=int, required=False, default=30, 
+    parser.add_argument('--nbin', type=int, required=False, default=15, 
                         help="Number of bins to group together (1D only)")
     parser.add_argument('--rebin', type=int, required=False, default=0, 
                         help="Number of bins to group together (1D only)")

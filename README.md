@@ -7,6 +7,11 @@
 
 ## Basic Functions
 
+## General Plotting Functions
+
+1. CompHistFromTwoBranchSameFile
+1. CompHistFromTwoFile
+
 ## aQGC specific function
 1. **openRootFile**: 
 2. **getaQGC_parameters**:
